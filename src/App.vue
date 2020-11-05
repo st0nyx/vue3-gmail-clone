@@ -17,17 +17,19 @@
             <strong>{{ email.subject }}</strong> - {{ email.body }}
           </p>
         </td>
-        <td class="date">{{ email.sentAt }}</td>
+        <td class="date">{{ format(new Date(email.sentAt), "MMMM do yy") }}</td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
+import { format } from "date-fns";
 export default {
   name: "App",
   data() {
     return {
+      format,
       emails: [
         {
           id: 1,
