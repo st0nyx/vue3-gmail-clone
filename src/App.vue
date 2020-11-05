@@ -3,7 +3,7 @@
   <table class="mail-table">
     <tbody>
       <tr
-        v-for="email in emails"
+        v-for="email in unarchivedEmails"
         :key="email.id"
         :class="['clickable', email.read ? 'read' : '']"
         @click="email.read = true"
@@ -18,6 +18,7 @@
           </p>
         </td>
         <td class="date">{{ format(new Date(email.sentAt), "MMMM do yy") }}</td>
+        <td><button @click="email.archived = true">Archive</button></td>
       </tr>
     </tbody>
   </table>
@@ -75,6 +76,17 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    sortedEmails() {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      return this.emails.sort((e1, e2) => {
+        return e1.sentAt < e2.sentAt ? 1 : -1;
+      });
+    },
+    unarchivedEmails() {
+      return this.sortedEmails.filter(e => !e.archived);
+    }
   }
 };
 </script>
