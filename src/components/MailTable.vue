@@ -39,7 +39,7 @@ export default {
     return {
       format,
       emails: ref(emails),
-      openedEmail: null
+      openedEmail: ref(null)
     };
   },
   components: {
