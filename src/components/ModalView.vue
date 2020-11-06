@@ -8,23 +8,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
-
-let useKeydown = keyCombos => {
-  let onKeydown = event => {
-    console.log(event.key);
-
-    let kc = keyCombos.find(kc => kc.key == event.key);
-    if (kc) {
-      // eslint-disable-next-line vue/custom-event-name-casing
-      kc.fn();
-    }
-  };
-  window.addEventListener("keydown", onKeydown);
-  onBeforeUnmount(() => {
-    window.removeEventListener("keydown", onKeydown);
-  });
-};
+import useKeydown from "@/composables/use-keydown";
 
 export default {
   setup(props, { emit }) {
