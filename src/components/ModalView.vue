@@ -9,20 +9,43 @@
 
 <script>
 import { onBeforeUnmount } from "vue";
+
+let useKeydown = keyCombos => {
+  let onKeydown = event => {
+    console.log(event.key);
+
+    let kc = keyCombos.find(kc => kc.key == event.key);
+    if (kc) {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      kc.fn();
+    }
+  };
+  window.addEventListener("keydown", onKeydown);
+  onBeforeUnmount(() => {
+    window.removeEventListener("keydown", onKeydown);
+  });
+};
+
 export default {
   setup(props, { emit }) {
-    let onKeydown = event => {
-      console.log(event.key);
-
-      if (event.key == "Escape") {
-        // eslint-disable-next-line vue/custom-event-name-casing
-        emit("closeModal");
+    useKeydown([
+      // eslint-disable-next-line vue/custom-event-name-casing
+      {
+        key: "Escape",
+        fn: () => {
+          // eslint-disable-next-line vue/custom-event-name-casing
+          emit("closeModal");
+        }
+      },
+      {
+        key: "Enter",
+        fn: () => {
+          // eslint-disable-next-line vue/custom-event-name-casing
+          console.log("A different Function");
+        }
       }
-    };
-    window.addEventListener("keydown", onKeydown);
-    onBeforeUnmount(() => {
-      window.removeEventListener("keydown", onKeydown);
-    });
+    ]);
+
     return {
       emit
     };
