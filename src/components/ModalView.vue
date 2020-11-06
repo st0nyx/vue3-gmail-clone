@@ -8,8 +8,21 @@
 </template>
 
 <script>
+import { onBeforeUnmount } from "vue";
 export default {
   setup(props, { emit }) {
+    let onKeydown = event => {
+      console.log(event.key);
+
+      if (event.key == "Escape") {
+        // eslint-disable-next-line vue/custom-event-name-casing
+        emit("closeModal");
+      }
+    };
+    window.addEventListener("keydown", onKeydown);
+    onBeforeUnmount(() => {
+      window.removeEventListener("keydown", onKeydown);
+    });
     return {
       emit
     };
