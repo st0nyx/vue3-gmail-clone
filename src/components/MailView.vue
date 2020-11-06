@@ -1,16 +1,15 @@
 <template>
   <div class="email-display">
-    <div class="toolbar">
+    <div>
       <button @click="toggleArchive">
         {{ email.archived ? "Move to Inbox (e)" : "Archive (e)" }}
       </button>
       <button @click="toggleRead">
         {{ email.read ? "Mark Unread (r)" : "Mark Read (r)" }}
       </button>
-      <!--      <button @click="goNewer">Newer (k)</button>-->
-      <!--      <button @click="goOlder">Older (j)</button>-->
+      <button @click="goNewer">Newer (k)</button>
+      <button @click="goOlder">Older (j)</button>
     </div>
-
     <h2 class="mb-0">
       Subject: <strong>{{ email.subject }}</strong>
     </h2>
@@ -21,39 +20,61 @@
       >
     </div>
     <div v-html="marked(email.body)" />
-    <!--      <div v-html="marked(email.body)" />-->
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import { format } from "date-fns";
 import marked from "marked";
-import useKeydown from "@/composables/use-keydown";
+// import axios from "axios";
+import useKeydown from "../composables/use-keydown";
 import { ref } from "vue";
-
 export default {
-  setup(props) {
-    // eslint-disable-next-line vue/no-setup-props-destructure
-    let email = props.email;
+  setup(props, { emit }) {
+    // let email = props.email;
     let toggleRead = () => {
-      email.read = !email.read;
-      axios.put(`http://localhost:3000/emails/${email.id}`, email);
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit("changeEmail", { toggleRead: true, save: true });
     };
-    // eslint-disable-next-line no-unused-vars
     let toggleArchive = () => {
-      email.archived = !email.archived;
-      axios.put(`http://localhost:3000/emails/${email.id}`, email);
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit("changeEmail", {
+        toggleArchive: true,
+        save: true,
+        closeModal: true
+      });
+    };
+    let goNewer = () => {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit("changeEmail", { changeIndex: -1 });
+    };
+    let goOlder = () => {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit("changeEmail", { changeIndex: 1 });
+    };
+    let goNewerAndArchive = () => {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit("changeEmail", { changeIndex: -1, toggleArchive: true, save: true });
+    };
+    let goOlderAndArchive = () => {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit("changeEmail", { changeIndex: 1, toggleArchive: true, save: true });
     };
     useKeydown([
       { key: "r", fn: toggleRead },
-      { key: "e", fn: toggleArchive }
+      { key: "e", fn: toggleArchive },
+      { key: "k", fn: goNewer },
+      { key: "j", fn: goOlder },
+      { key: "[", fn: goNewerAndArchive },
+      { key: "]", fn: goOlderAndArchive }
     ]);
     return {
       format,
       marked,
       toggleRead: ref(toggleRead),
-      toggleArchive: ref(toggleArchive)
+      toggleArchive: ref(toggleArchive),
+      goNewer: ref(goNewer),
+      goOlder: ref(goOlder)
     };
   },
   props: {
