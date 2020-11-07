@@ -1,5 +1,4 @@
 <template>
-  <h1>{{ emailSelection.emails.size }} emails selected</h1>
   <table class="mail-table">
     <tbody>
       <tr
@@ -37,28 +36,14 @@ import { format } from "date-fns";
 import axios from "axios";
 import MailView from "@/components/MailView.vue";
 import ModalView from "@/components/ModalView.vue";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
+import useEmailSelection from "@/composables/use-email-selection";
 export default {
   async setup() {
     let { data: emails } = await axios.get("http://localhost:3000/emails");
 
-    let selected = reactive(new Set());
-    let emailSelection = {
-      emails: selected,
-      toggle(email) {
-        // eslint-disable-next-line vue/no-ref-as-operand
-        if (selected.has(email)) {
-          // eslint-disable-next-line vue/no-ref-as-operand
-          selected.delete(email);
-        } else {
-          // eslint-disable-next-line vue/no-ref-as-operand
-          selected.add(email);
-        }
-        console.log(selected);
-      }
-    };
     return {
-      emailSelection,
+      emailSelection: useEmailSelection(),
       format,
       emails: ref(emails),
       openedEmail: ref(null)
