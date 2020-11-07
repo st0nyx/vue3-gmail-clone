@@ -1,22 +1,26 @@
 <template>
+  <h1>{{ emailSelection.emails.size }} emails selected</h1>
   <table class="mail-table">
     <tbody>
       <tr
         v-for="email in unarchivedEmails"
         :key="email.id"
         :class="['clickable', email.read ? 'read' : '']"
-        @click="openEmail(email)"
       >
         <td>
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            @click="emailSelection.toggle(email)"
+            :selected="emailSelection.emails.has(email)"
+          />
         </td>
-        <td>{{ email.from }}</td>
-        <td>
+        <td @click="openEmail(email)">{{ email.from }}</td>
+        <td @click="openEmail(email)">
           <p>
             <strong>{{ email.subject }}</strong> - {{ email.body }}
           </p>
         </td>
-        <td class="date">
+        <td class="date" @click="openEmail(email)">
           {{ format(new Date(email.sentAt), "MMM do yyyy") }}
         </td>
         <td><button @click="archiveEmail(email)">Archive</button></td>
@@ -33,11 +37,28 @@ import { format } from "date-fns";
 import axios from "axios";
 import MailView from "@/components/MailView.vue";
 import ModalView from "@/components/ModalView.vue";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 export default {
   async setup() {
     let { data: emails } = await axios.get("http://localhost:3000/emails");
+
+    let selected = reactive(new Set());
+    let emailSelection = {
+      emails: selected,
+      toggle(email) {
+        // eslint-disable-next-line vue/no-ref-as-operand
+        if (selected.has(email)) {
+          // eslint-disable-next-line vue/no-ref-as-operand
+          selected.delete(email);
+        } else {
+          // eslint-disable-next-line vue/no-ref-as-operand
+          selected.add(email);
+        }
+        console.log(selected);
+      }
+    };
     return {
+      emailSelection,
       format,
       emails: ref(emails),
       openedEmail: ref(null)
