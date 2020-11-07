@@ -9,9 +9,21 @@
       />
     </span>
     <span class="buttons">
-      <button @click="emailSelection.markRead()">Mark Read</button>
-      <button @click="emailSelection.markUnread()">Mark Unread</button>
-      <button @click="emailSelection.archive()">Mark Archive</button>
+      <button
+        @click="emailSelection.markRead"
+        :disabled="[...emailSelection.emails].every(e => e.read)"
+      >
+        Mark Read
+      </button>
+      <button
+        @click="emailSelection.markUnread"
+        :disabled="[...emailSelection.emails].every(e => !e.read)"
+      >
+        Mark Unread
+      </button>
+      <button @click="emailSelection.archive" :disabled="numberSelected === 0">
+        Mark Archive
+      </button>
     </span>
   </div>
 </template>
@@ -42,7 +54,8 @@ export default {
       allEmailsSelected,
       someEmailsSelected,
       bulkSelect,
-      emailSelection
+      emailSelection,
+      numberSelected
     };
   },
   props: {
